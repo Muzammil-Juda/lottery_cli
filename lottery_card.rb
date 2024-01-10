@@ -1,10 +1,13 @@
 class LotteryCard
-  attr_accessor :picks
-  attr_accessor :pick_pool
-  attr_reader :number_pool
-  def initialize(card_size, picks_max_count)
+  attr_reader :picks
+  attr_reader :card_size
+  attr_reader :picks_size
+
+  def initialize(card_size, picks_size)
+    raise "Card size must be > number of possible picks " unless card_size > picks_size
     @card_size = card_size
-    @picks_max_count = picks_max_count
+    @picks_size = picks_size
+
     @picks = Array.new
   end
 
@@ -13,19 +16,19 @@ class LotteryCard
     (1..@card_size).each do |n|
       number_pool << n
     end
-    number_pool = number_pool.shuffle
-    @picks = number_pool.slice(1,@picks_max_count).sort
+    number_pool.shuffle!
+    @picks = number_pool.slice(1, @picks_size ).sort
   end
 
   def reset
     @picks = []
   end
 
-  def new_number?(num)
+  def unique_number?(num)
     @picks.index(num).nil?
   end
 
-  def valid_number?(num)
+  def within_range?(num)
     num >=1 and num <= @card_size
   end
 
@@ -35,10 +38,15 @@ class LotteryCard
   end
 
   def full?
-    @picks.size == @picks_max_count
+    @picks.size == @picks_size
   end
 
   def show
-    puts "Picks:#{@picks*','}"
+    puts picks
   end
+
+  def picks # custom getter
+    "Picks: #{@picks*','}"
+  end
+
 end

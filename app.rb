@@ -1,17 +1,19 @@
 require_relative "lottery_card"
 
 class App
-  def initialize
-    @card_size = 30
-    @picks_size = 6
-    @card = LotteryCard.new(@card_size,@picks_size)
+  attr_reader :card
+
+  def initialize(card_size=30, pick_size=6)
+    @card = LotteryCard.new(card_size, pick_size)
   end 
+
   def run
     loop do
       break if @card.full?
 
-      puts "Enter a unique number from 1 to #{@card_size}, -1 to generate a quick-pick, nothing to end"
+      puts "Enter a unique number from 1 to #{@card.card_size}, -1 to generate a quick-pick, nothing to end"
       input = gets.chomp
+      
       break if input.empty?
 
       begin
@@ -19,11 +21,11 @@ class App
         if number == -1
           @card.generate_quick_picks
         else
-          if ! @card.valid_number?(number)
-            puts "Not a valid number \a"
+          if ! @card.within_range?(number)
+            puts "Not in range\a"
             next
           end
-          if ! @card.new_number?(number) 
+          if ! @card.unique_number?(number) 
             puts "Pick a number not already chosen"
             next
           end
@@ -41,4 +43,5 @@ class App
 end # class App
 
 lets_go = App.new
+#lets_go.card.generate_quick_picks
 lets_go.run
